@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Sinh Viên</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-graduation-cap"></i> QLSV</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a></li>
+                <li><a href="#students" class="nav-link" data-section="students">
+                    <i class="fas fa-users"></i> Quản Lý Sinh Viên
+                </a></li>
+                <li><a href="#courses" class="nav-link" data-section="courses">
+                    <i class="fas fa-book"></i> Quản Lý Môn Học
+                </a></li>
+                <li><a href="#grades" class="nav-link" data-section="grades">
+                    <i class="fas fa-chart-line"></i> Quản Lý Điểm
+                </a></li>
+                <li><a href="#classes" class="nav-link" data-section="classes">
+                    <i class="fas fa-chalkboard"></i> Quản Lý Lớp
+                </a></li>
+                <li><a href="#reports" class="nav-link" data-section="reports">
+                    <i class="fas fa-file-alt"></i> Báo Cáo
+                </a></li>
+                <li><a href="#settings" class="nav-link" data-section="settings">
+                    <i class="fas fa-cog"></i> Cài Đặt
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" placeholder="Tìm kiếm...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="user-menu">
+                        <img src="https://via.placeholder.com/40" alt="User" class="user-avatar">
+                        <span>Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="total-students">0</h3>
+                                <p>Tổng Sinh Viên</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="total-courses">0</h3>
+                                <p>Tổng Môn Học</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chalkboard"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="total-classes">0</h3>
+                                <p>Tổng Lớp Học</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="avg-grade">0</h3>
+                                <p>Điểm Trung Bình</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-charts">
+                        <div class="chart-container">
+                            <h3>Thống Kê Sinh Viên Theo Khoa</h3>
+                            <canvas id="departmentChart"></canvas>
+                        </div>
+                        <div class="recent-activities">
+                            <h3>Hoạt Động Gần Đây</h3>
+                            <ul id="recent-activities-list">
+                                <!-- Activities will be populated by JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Students Section -->
+                <section id="students-section" class="section">
+                    <div class="section-header">
+                        <h2>Quản Lý Sinh Viên</h2>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <button class="btn btn-secondary" id="export-students-btn">
+                                <i class="fas fa-file-export"></i> Xuất CSV
+                            </button>
+                            <button class="btn btn-secondary" id="print-students-btn">
+                                <i class="fas fa-print"></i> In danh sách
+                            </button>
+                            <button class="btn btn-success" id="seed-students-btn">
+                                <i class="fas fa-user-plus"></i> Thêm nhanh SV mẫu
+                            </button>
+                            <button class="btn btn-primary" id="add-student-btn">
+                                <i class="fas fa-plus"></i> Thêm Sinh Viên
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters">
+                        <select id="department-filter">
+                            <option value="">Tất cả khoa</option>
+                        </select>
+                        <select id="class-filter">
+                            <option value="">Tất cả lớp</option>
+                        </select>
+                        <input type="text" id="student-search" placeholder="Tìm kiếm sinh viên...">
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="students-table">
+                            <thead>
+                                <tr>
+                                    <th>MSSV</th>
+                                    <th>Họ và Tên</th>
+                                    <th>Email</th>
+                                    <th>Khoa</th>
+                                    <th>Lớp</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-tbody">
+                                <!-- Student data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Other sections will be added here -->
+                <!-- Courses Section -->
+                <section id="courses-section" class="section">
+                    <div class="section-header">
+                        <h2>Quản Lý Môn Học</h2>
+                        <button class="btn btn-primary" id="add-course-btn">
+                            <i class="fas fa-plus"></i> Thêm Môn Học
+                        </button>
+                    </div>
+
+                    <div class="filters">
+                        <input type="text" id="course-search" placeholder="Tìm kiếm môn học...">
+                        <select id="register-student-select">
+                            <option value="">-- Chọn sinh viên để đăng ký --</option>
+                        </select>
+                        <button class="btn btn-secondary" id="view-credits-btn">Xem tín chỉ</button>
+                        <button class="btn btn-secondary" id="view-grades-btn">Xem điểm</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="courses-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Môn Học</th>
+                                    <th>Tên Môn Học</th>
+                                    <th>Số Tín Chỉ</th>
+                                    <th>Khoa</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+
+    <!-- Course Modal -->
+    <div id="course-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="course-modal-title">Thêm Môn Học</h2>
+            <form id="course-form">
+                <!-- Form fields will be added by JS -->
+            </form>
+        </div>
+    </div>
+                            <tbody id="courses-tbody">
+                                <!-- Course data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Grades Section -->
+                <section id="grades-section" class="section">
+                    <div class="section-header">
+                        <h2>Quản Lý Điểm</h2>
+                    </div>
+
+                    <div class="filters">
+                        <select id="grade-class-filter">
+                            <option value="">Chọn lớp học</option>
+                        </select>
+                        <select id="grade-course-filter">
+                            <option value="">Chọn môn học</option>
+                        </select>
+                        <button class="btn btn-primary" id="load-grades-btn">Tải danh sách</button>
+                    </div>
+
+                    <div class="table-container" id="grades-table-container" style="display:none;">
+                        <h3 id="grades-table-title"></h3>
+                        <table class="data-table" id="grades-table">
+                            <thead>
+                                <tr>
+                                    <th>MSSV</th>
+                                    <th>Họ và Tên</th>
+                                    <th>Điểm Chuyên Cần</th>
+                                    <th>Điểm Giữa Kỳ</th>
+                                    <th>Điểm Cuối Kỳ</th>
+                                    <th>Điểm Tổng Kết</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grades-tbody">
+                                <!-- Grade data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div style="text-align: right; margin-top: 20px;">
+                            <button class="btn btn-success" id="save-grades-btn">Lưu Điểm</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Classes Section -->
+                <section id="classes-section" class="section">
+                    <div class="section-header">
+                        <h2>Quản Lý Lớp</h2>
+                        <button class="btn btn-primary" id="add-class-btn">
+                            <i class="fas fa-plus"></i> Thêm Lớp
+                        </button>
+                    </div>
+
+                    <div class="filters">
+                        <input type="text" id="class-search" placeholder="Tìm kiếm lớp học...">
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="classes-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Lớp</th>
+                                    <th>Tên Lớp</th>
+                                    <th>Khoa</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classes-tbody">
+                                <!-- Class data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+    <!-- Class Modal -->
+    <div id="class-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="class-modal-title">Thêm Lớp Học</h2>
+            <form id="class-form">
+                <!-- Form fields will be added by JS -->
+            </form>
+        </div>
+    </div>
+                <!-- Reports Section -->
+                <section id="reports-section" class="section">
+                    <div class="section-header">
+                        <h2>Báo Cáo và Thống Kê</h2>
+                    </div>
+
+                    <div class="report-generator">
+                        <h3>Bảng điểm Sinh viên</h3>
+                        <div class="filters">
+                            <select id="transcript-student-select">
+                                <option value="">-- Chọn sinh viên --</option>
+                            </select>
+                            <button class="btn btn-primary" id="generate-transcript-btn">Xem Bảng điểm</button>
+                        </div>
+                    </div>
+
+                    <div id="transcript-container" class="transcript-container" style="display:none;">
+                        <div id="transcript-header" class="transcript-header">
+                            <!-- Transcript header will be populated by JS -->
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table" id="transcript-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã Môn Học</th>
+                                        <th>Tên Môn Học</th>
+                                        <th>Số Tín Chỉ</th>
+                                        <th>Điểm Tổng Kết</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transcript-tbody">
+                                    <!-- Transcript data will be populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="transcript-footer" class="transcript-footer">
+                            <!-- GPA and print button will be here -->
+                        </div>
+                    </div>
+
+                    <hr style="margin: 30px 0; border: 1px solid #eee;">
+
+                    <div class="report-generator">
+                        <h3>Thống kê Điểm theo Lớp</h3>
+                        <div class="filters">
+                            <select id="stats-class-select">
+                                <option value="">-- Chọn lớp --</option>
+                            </select>
+                            <select id="stats-course-select">
+                                <option value="">-- Chọn môn học --</option>
+                            </select>
+                            <button class="btn btn-primary" id="generate-stats-btn">Xem Thống kê</button>
+                        </div>
+                    </div>
+
+    <!-- Info Modal (Credits/Grades/Registrations) -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="info-modal-title">Thông tin</h2>
+            <div id="info-modal-body"></div>
+        </div>
+    </div>
+
+                    <div id="stats-container" class="stats-container" style="display:none;">
+                        <div id="stats-header"></div>
+                        <div class="chart-container">
+                            <canvas id="gradeDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="section">
+                    <div class="section-header">
+                        <h2>Cài Đặt Hồ Sơ</h2>
+                    </div>
+
+                    <div class="profile-settings">
+                        <div class="profile-avatar-section">
+                            <h3>Ảnh Đại Diện</h3>
+                            <img src="https://via.placeholder.com/150" alt="Avatar" id="profile-avatar-preview" class="profile-avatar-preview">
+                            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                            <button class="btn btn-secondary" id="change-avatar-btn">Đổi Avatar</button>
+                        </div>
+                        <div class="profile-info-section">
+                            <h3>Thông Tin Cá Nhân</h3>
+                            <form id="profile-form">
+                                <div class="form-group">
+                                    <label for="profile-name">Họ và Tên:</label>
+                                    <input type="text" id="profile-name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-email">Email:</label>
+                                    <input type="email" id="profile-email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-dob">Ngày Sinh:</label>
+                                    <input type="date" id="profile-dob" name="dob">
+                                </div>
+                                <div style="text-align: right; margin-top: 20px;">
+                                    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="student-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title">Thêm Sinh Viên</h2>
+            <form id="student-form">
+                <!-- Form fields will be added -->
+
+    <!-- Custom Notification -->
+    <div id="notification-toast" class="toast">
+        <p id="notification-message"></p>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 id="confirmation-title">Xác nhận</h2>
+            <p id="confirmation-message"></p>
+            <div class="confirmation-buttons">
+                <button id="confirm-yes-btn" class="btn btn-danger">Có</button>
+                <button id="confirm-no-btn" class="btn btn-secondary">Không</button>
+            </div>
+        </div>
+    </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Student View Modal -->
+    <div id="student-view-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Thông Tin Chi Tiết Sinh Viên</h2>
+            <div id="student-details-content"></div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
